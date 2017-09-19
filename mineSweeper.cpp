@@ -3,8 +3,11 @@
 #include <cstdlib>
 #include <time.h>
 #include <math.h>
+#include <stdio.h>
 
 using namespace std;
+
+// extern Board * GAMEBOARD = NULL;
 
 
 mineSweeper::mineSweeper(){
@@ -15,33 +18,22 @@ mineSweeper::mineSweeper(){
 
 mineSweeper::~mineSweeper(){}
 
-// int mineSweeper::gen_rand_num(int max,int seed);
 
 int mineSweeper::gen_rand_num(int max){
-    // srand((unsigned)seed);
+
     return rand() % max;
 }
 
-Board * mineSweeper::make_gameBoard(int width, int height){
+Board_t * mineSweeper::make_gameBoard(int width, int height){
     int size = width * height;
-    Board gameBoard [size];
-    for (int i = 0; i<size;i++){gameBoard[i] = 0;}
-    int bomb_limit =  (int)ceil(((float)size * .15));
-    cout<<bomb_limit<<endl;
+    Board_t * GAMEBOARD = (Board_t*)malloc(size*sizeof(Board_t));
+    for (int i = 0; i<size;i++){GAMEBOARD[i] = 0;}
     
+    int bomb_limit =  (int)ceil(((float)size * .20));
     for (int i =0 ;i<bomb_limit;i++){
-        gameBoard[gen_rand_num(size)] = 1;
+        GAMEBOARD[gen_rand_num(size)] = 1;
     }
-    for (int i = 0; i<size;i++){
-        if (!(i%width)){cout<<endl;}
-        cout<<(int)gameBoard[i];
-        
-    }
-    cout<<endl;
-    
-    
-    
-    Board *ptrBoard = gameBoard;
-    return ptrBoard;
+
+    return GAMEBOARD;
     
 }

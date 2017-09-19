@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include "mineSweeper.h"
 
 using namespace std;
@@ -10,6 +11,16 @@ int main(void)
   // cout<<myMS.gen_rand_num(1)<<endl;
   
   
-  myMS.make_gameBoard(10,10);
+  Board_t *mb;
+  mb = myMS.make_gameBoard(10,10);
+  cout<<"in main the address returned is "<<(void*)mb<<endl;
+  for (int i = 0; i<100;i++){
+    if (!(i%10)){cout<<endl;}
+    cout<<(int)mb[i];
+      
+  }
+  
+  free(mb);
+
   return 0;
 }

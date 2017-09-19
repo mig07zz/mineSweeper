@@ -4,7 +4,7 @@
 #define MAX_BOARD_SZ 20
 #define MIN_BOARD_SZ 2
 
-typedef unsigned char Board;
+typedef char Board_t;
 
 class mineSweeper{
     struct SQUARE{
@@ -19,7 +19,7 @@ class mineSweeper{
     mineSweeper();
     ~mineSweeper();
     int gen_rand_num(int max);
-    Board* make_gameBoard(int width, int height);
+    Board_t* make_gameBoard(int width, int height);
     
     //getters
     int get_width();
