@@ -47,11 +47,18 @@ int main(int argc, char *argv[])
   
   //main game loop code goes here 
   bool gameOver = false;
-  
+  int x_coor;
+  int y_coor;
   while (!gameOver){
-    
+    myMS.displayBoard(sqtr_ptr);
+    cout<<"\nenter x coordinate to open.==>";
+    cin>>x_coor;
+    cout<<"\nenter y coordinate to open.==>";
+    cin>>y_coor;
+    myMS.open_square(sqtr_ptr,x_coor,y_coor,gameOver);
   }
-  
+  cout<<"\nGAME OVER"<<endl;
+  myMS.displayAll(sqtr_ptr);
   
   free(mb);
 

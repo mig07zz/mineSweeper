@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <algorithm>
+#include <string.h>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ int mineSweeper::coor_to_index(int x, int y){
     return y*this->board_width+x;
 }
 
+
 Board_t * mineSweeper::make_gameBoard(int width, int height,int number_of_mines){
     
     int size = width * height;
@@ -49,7 +51,7 @@ Board_t * mineSweeper::make_gameBoard(int width, int height,int number_of_mines)
 }
 
 void mineSweeper::init_board(SQUARE_t *outerBoard,Board_t *innerBoard){
-    cout<<endl<<"this is innerboard[1]"<<(int)innerBoard[1]<<endl;
+    // cout<<endl<<"this is innerboard[1]"<<(int)innerBoard[1]<<endl;
     for (int i = 0; i< (this->board_height*this->board_width);i++){
         outerBoard[i].val = '#';
         outerBoard[i].open = false;
@@ -78,14 +80,24 @@ void mineSweeper::displayBoard(SQUARE_t *theBoard){
     cout<<endl<<"========================================================"<<endl;
     
     //below this line is just for testing. Needs to be removed on the final version.================================================================================
-        for (int i = 0; i<b_size;i++){
+    //     for (int i = 0; i<b_size;i++){
+    //     if(!(i%endofline)){cout<<endl;}
+    //     cout<<" "<<theBoard[i].secret;
+    // }
+    // cout<<endl<<"========================================================"<<endl;
+    //     for (int i = 0; i<b_size;i++){
+    //     if(!(i%endofline)){cout<<endl;}
+    //     cout<<" "<<theBoard[i].neighbor_mines;
+    // }
+    // cout<<endl<<"========================================================"<<endl;
+}
+void mineSweeper::displayAll(SQUARE_t *theboard){
+    cout<<"======================================================"<<endl;
+    int endofline = this->board_width;
+    int b_size = this->board_height*this->board_width;
+    for (int i = 0; i<b_size;i++){
         if(!(i%endofline)){cout<<endl;}
-        cout<<" "<<theBoard[i].secret;
-    }
-    cout<<endl<<"========================================================"<<endl;
-        for (int i = 0; i<b_size;i++){
-        if(!(i%endofline)){cout<<endl;}
-        cout<<" "<<theBoard[i].neighbor_mines;
+        cout<<" "<<theboard[i].secret;
     }
     cout<<endl<<"========================================================"<<endl;
 }
@@ -99,7 +111,7 @@ void mineSweeper::calc_hidden(SQUARE_t *theBoard){
         x = 0;
         for(;x<w;x++){
             mineFinder(theBoard,x,y); 
-            cout<<coor_to_index(x,y)<<endl;
+            // cout<<coor_to_index(x,y)<<endl;
         }
     }
 }
@@ -146,6 +158,20 @@ void mineSweeper::mineFinder(SQUARE_t* theboard,int x, int y){
             theboard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
+}
+
+void mineSweeper::open_square(SQUARE_t * theboard,int x,int y,bool &gameOver){
+    int index = coor_to_index(x,y);
+    if (theboard[index].secret=='*'){
+        gameOver = true;
+        theboard[index].val = theboard[index].secret;
+        theboard[index].open = true;
+    }
+    else{
+        theboard[index].val = '0'+theboard[index].neighbor_mines;
+        theboard[index].open = true;
+    }
+    
 }
 
 bool mineSweeper::has_top_n(int center_x,int center_y){
