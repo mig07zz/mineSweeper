@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
     bombs = atoi(argv[3]);
         cout<<"here3"<<endl;
   }
-  cout << "Hello World!" << endl;
+  // cout << "Hello World!" << endl;
   mineSweeper myMS;
-  cout<<"w = "<<w<<"h = "<<h<<"bombs = "<<bombs<<endl;
+  cout<<"w = "<<w<<" ,h = "<<h<<" ,bombs = "<<bombs<<endl;
   
   myMS.set_width(w);
   myMS.set_height(h);
@@ -45,7 +45,12 @@ int main(int argc, char *argv[])
   
   myMS.displayBoard(sqtr_ptr);
   
+  //main game loop code goes here 
+  bool gameOver = false;
   
+  while (!gameOver){
+    
+  }
   
   
   free(mb);

@@ -10,7 +10,9 @@ typedef struct SQUARE{
     bool open;
     bool flagged;
     int neighbor_mines;
-    char secret; 
+    char secret;
+    int x;
+    int y;
 }SQUARE_t;
 
 
@@ -26,6 +28,8 @@ class mineSweeper{
     void displayBoard(SQUARE_t * theBoard);
     void calc_hidden(SQUARE_t * theBoard);
     
+    int coor_to_index(int x, int y);
+    
     bool has_top_n(int center_x,int center_y);
     bool has_bottom_n(int center_x,int center_y);
     bool has_left_n(int center_x,int center_y);
@@ -34,7 +38,8 @@ class mineSweeper{
     bool has_topLeft_n(int center_x,int center_y);
     bool has_bottomRight_n(int center_x,int center_y);
     bool has_bottomLeft_n(int center_x,int center_y);
-    
+    // bool neighbor_has_mine(int index);
+    void  mineFinder(SQUARE_t* theboard,int x, int y);
     
     //getters
     int get_width();
