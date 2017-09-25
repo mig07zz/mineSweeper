@@ -16,7 +16,8 @@ mineSweeper::mineSweeper(){
     board_width = 10;
     board_height = 10;
     bomb_check = 0;
-    bomb_counter = 100;
+    flag_num = 0;
+    bomb_counter = 100; // number of uncovered spaces
     srand(time(NULL));
 }
 
@@ -116,10 +117,10 @@ void mineSweeper::displayBoard(SQUARE_t *theBoard){
     cout<<endl<<"========================================================"<<endl;
     
     //below this line is just for testing. Needs to be removed on the final version.================================================================================
-        for (int i = 0; i<b_size;i++){
-        if(!(i%endofline)){cout<<endl;}
-        cout<<" "<<theBoard[i].open;
-    }
+    //     for (int i = 0; i<b_size;i++){
+    //     if(!(i%endofline)){cout<<endl;}
+    //     cout<<" "<<theBoard[i].open;
+    // }
 //     cout<<endl<<"========================================================"<<endl;
 //         for (int i = 0; i<b_size;i++){
 //         if(!(i%endofline)){cout<<endl;}
@@ -200,6 +201,10 @@ void mineSweeper::mineFinder(SQUARE_t* theBoard,int x, int y){
 
 void mineSweeper::open_square(SQUARE_t * theBoard,int x,int y,bool &gameOver){
     int index = coor_to_index(x,y);
+    if(theBoard[index].flagged){
+        cout << "\nCan't open this space, there's a flag here! \n";
+        return;
+    }
     if (theBoard[index].secret=='*'){
         gameOver = true;
         theBoard[index].val = theBoard[index].secret;
@@ -221,7 +226,8 @@ void mineSweeper::open_all_empty_neighbours(SQUARE_t * theBoard, int x, int y){
     int index = coor_to_index(x,y);
     if (theBoard[index].open ==true){
         return;
-    }else{
+    }
+    else{
         if (theBoard[index].neighbor_mines == 0&&theBoard[index].secret == '~'){
             theBoard[index].val = '0';
             theBoard[index].open = true;
@@ -279,8 +285,36 @@ void mineSweeper::open_all_empty_neighbours(SQUARE_t * theBoard, int x, int y){
 
 void mineSweeper::set_flag_square(SQUARE_t * theBoard,int x,int y,bool state){
     int index = coor_to_index(x, y);
-    theBoard[index].flagged = state;
-    // theBoard[index].value = 
+    if(theBoard[index].open){
+        cout << "\nWhy would you put a flag here? The space is already open!\n";
+        return;
+    }
+    if(state){
+        if(this->flag_num == 0){
+            cout << "\nNo flags left!";
+            return;
+        }
+        if(!theBoard[index].flagged){
+            theBoard[index].flagged = state;
+            theBoard[index].val = '!';
+            this->flag_num--;
+            cout << this->flag_num;
+        }
+        else{
+            cout << "\nThere's already a flag here!";
+        }
+    }
+    else{
+        if(theBoard[index].flagged){
+            theBoard[index].flagged = state;
+            theBoard[index].val = '#';
+            this->flag_num++;
+            cout << this->flag_num;
+        }
+        else{
+            cout << "\nThere's no flag here!";
+        }
+    }
 }
 
 
@@ -329,13 +363,14 @@ void mineSweeper::set_bomb_check(SQUARE_t *theBoard){
             this->bomb_check +=1;
         }
     }
+    this->flag_num = this->bomb_check;
 }
 
 void mineSweeper::set_bomb_counter(SQUARE_t * theBoard){
     int size = this->board_height * this->board_width;
     this->bomb_counter = 0;
     for (int i = 0;i<size;i++){
-        if(theBoard[i].open == false){
+        if(theBoard[i].val == '#' || theBoard[i] == '!'){
             this->bomb_counter +=1;
         }
     } 

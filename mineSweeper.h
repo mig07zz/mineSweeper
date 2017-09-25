@@ -66,6 +66,7 @@ class mineSweeper{
   int board_height;
   int bomb_check;
   int bomb_counter;
+  int flag_num;
     
     
     

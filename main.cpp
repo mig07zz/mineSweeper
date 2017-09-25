@@ -15,22 +15,32 @@ int validate_numbers(string s);
 
 bool is_number(const std::string& s)
 {
-    string::const_iterator it = s.begin();
-    while (it != s.end() && isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
+    if (s.size() == 0){
+      return false;
+    }
+    for(int i = 0; i < s.size(); i++){
+      if( ((int)s[i] - (int)'0') > 9 || ((int)s[i] - (int)'0') < 0 ){
+        return false;
+      }
+    }
+    return true;
+    // string::const_iterator it = s.begin();
+    // while (it != s.end() && isdigit(*it)) ++it;
+    // return !s.empty() && it == s.end();
 }
 
 int validate_numbers(string s){
   int ssize = s.size();
   if (ssize > 2 || (!is_number(s))){   //this is just a restriction to keep users from going over '99' 
-    return MIN_BOARD_SZ;
+    return -1;
   }
   else{
+    cout << is_number(s) << endl;
     if (is_number(s)){                      
       return stoi(s);
     }
   }
-  return 1;
+  return -1;
 }
 
 int handle_player_turn(char c,int *x,int * y){
@@ -42,6 +52,10 @@ int handle_player_turn(char c,int *x,int * y){
             cin>>x_coor;
             cout<<"\nenter y coordinate to open.==>";
             cin>>y_coor;
+            if(validate_numbers(x_coor) == -1 || validate_numbers(y_coor) == -1){
+              cout << "\nInvalid input!";
+              return 0;
+            }
             *x =  validate_numbers(x_coor);
             *y =  validate_numbers(y_coor);
 
@@ -53,6 +67,10 @@ int handle_player_turn(char c,int *x,int * y){
             cin>>x_coor;
             cout<<"\nenter y coordinate to flag.==>";
             cin>>y_coor;
+            if(validate_numbers(x_coor) == -1 || validate_numbers(y_coor) == -1){
+              cout << "\nInvalid input!";
+              return 0;
+            }
             *x =  validate_numbers(x_coor);
             *y =  validate_numbers(y_coor);
             // toggle_flag_square(this,clean_x,clean_y,gameOver);
@@ -63,6 +81,10 @@ int handle_player_turn(char c,int *x,int * y){
             cin>>x_coor;
             cout<<"\nenter y coordinate to remove flag.==>";
             cin>>y_coor;
+            if(validate_numbers(x_coor) == -1 || validate_numbers(y_coor) == -1){
+              cout << "\nInvalid input!";
+              return 0;
+            }
             *x =  validate_numbers(x_coor);
             *y =  validate_numbers(y_coor);
             // toggle_flag_square(this,clean_x,clean_y,gameOver);
@@ -85,15 +107,30 @@ int main(int argc, char *argv[])
   int bombs = (int)ceil(((float)(w*h) * .20));   //default to 20% bombs
   
   if(argc>1){
-    w = validate_numbers((argv[1]));
+    if( validate_numbers((argv[1])) == -1){
+      w = MIN_BOARD_SZ;
+    } 
+    else{
+      w = validate_numbers((argv[1]));
+    }
     // cout<<"here1"<<endl;
   }
   if(argc>2){
-    h = validate_numbers((argv[2]));
+    if( validate_numbers((argv[2])) == -1){
+      h = MIN_BOARD_SZ;
+    }
+    else{
+      h = validate_numbers((argv[2]));
+    }
         // cout<<"here2"<<endl;
   }
   if(argc>3){
-    bombs = validate_numbers((argv[3]));
+    if( validate_numbers((argv[3])) == -1){
+      bombs = 1;
+    }
+    else{
+      bombs = validate_numbers((argv[3]));
+    }
         // cout<<"here3"<<endl;
   }
   // cout << "Hello World!" << endl;
@@ -131,7 +168,7 @@ int main(int argc, char *argv[])
   // yptr = y_coor;
   while (!gameOver){
     myMS.displayBoard(sqtr_ptr);
-    cout << "\nPlayer options:\n1. Reveal space\n2. Flag space\n3. Remove flag";
+    cout << "\nPlayer options:\n1. Reveal space\n2. Flag space\n3. Remove flag\n";
     cin >> player_option;
     // cout<<"player entered the following..."<<player_option[0]<<endl;
     option_command = handle_player_turn((char)player_option[0],&x_coor,&y_coor);
@@ -140,13 +177,13 @@ int main(int argc, char *argv[])
     	myMS.open_square(sqtr_ptr,x_coor,y_coor,gameOver);
     }
 
-    if(option_command == 2){
+    else if(option_command == 2){
     	myMS.set_flag_square(sqtr_ptr,x_coor,y_coor,true);
     }
-	if(option_command == 2){
-		myMS.set_flag_square(sqtr_ptr,x_coor,y_coor,false);
-	}
-	if(option_command == 0){cout<<"\nnot a valid option\n";}
+  	else if(option_command == 3){
+  		myMS.set_flag_square(sqtr_ptr,x_coor,y_coor,false);
+  	}
+  	else{cout<<"\nnot a valid option\n";}
 
 	cout<<"bomb counter == "<<myMS.get_bomb_counter()<<" . and bomb check == "<<myMS.get_bomb_check()<<endl;;
   	if (myMS.get_bomb_check() == myMS.get_bomb_counter()){
