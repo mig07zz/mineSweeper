@@ -33,27 +33,46 @@ int validate_numbers(string s){
   return 1;
 }
 
-void handle_player_turn(int player_option){
-  string x_coor;
-  string y_coor;
-  if(player_option == 1){
-    cout<<"\nenter x coordinate to open.==>";
-    cin>>x_coor;
-    cout<<"\nenter y coordinate to open.==>";
-    cin>>y_coor;
-    int clean_x =  validate_numbers(x_coor);
-    int clean_y =  validate_numbers(y_coor);
-    myMS.open_square(sqtr_ptr,clean_x,clean_y,gameOver);
-  }
-  else if(player_option == 2){
-    out<<"\nenter x coordinate to open.==>";
-    cin>>x_coor;
-    cout<<"\nenter y coordinate to open.==>";
-    cin>>y_coor;
-    int clean_x =  validate_numbers(x_coor);
-    int clean_y =  validate_numbers(y_coor);
-    myMS.flag_square(sqtr_ptr,clean_x,clean_y,gameOver);
-  }
+int handle_player_turn(char c,int *x,int * y){
+    string x_coor;
+    string y_coor;
+    switch (c){
+        case '1':
+            cout<<"\nenter x coordinate to open.==>";
+            cin>>x_coor;
+            cout<<"\nenter y coordinate to open.==>";
+            cin>>y_coor;
+            *x =  validate_numbers(x_coor);
+            *y =  validate_numbers(y_coor);
+
+            // open_square(this,clean_x,clean_y,gameOver);
+            return 1;
+        break;
+        case '2':
+            cout<<"\nenter x coordinate to flag.==>";
+            cin>>x_coor;
+            cout<<"\nenter y coordinate to flag.==>";
+            cin>>y_coor;
+            *x =  validate_numbers(x_coor);
+            *y =  validate_numbers(y_coor);
+            // toggle_flag_square(this,clean_x,clean_y,gameOver);
+            return 2;
+        break;
+        case '3':
+            cout<<"\nenter x coordinate to remove flag.==>";
+            cin>>x_coor;
+            cout<<"\nenter y coordinate to remove flag.==>";
+            cin>>y_coor;
+            *x =  validate_numbers(x_coor);
+            *y =  validate_numbers(y_coor);
+            // toggle_flag_square(this,clean_x,clean_y,gameOver);
+            return 3;
+        break;
+        default:
+        return 0;
+    }
+    return 0;
+
 }
  
 int main(int argc, char *argv[])
@@ -102,15 +121,39 @@ int main(int argc, char *argv[])
   
   //main game loop code goes here 
   bool gameOver = false;
-  int player_option;
-  string x_coor;
-  string y_coor;
+  string player_option;
+  int option_command;
+  int x_coor = 0;
+  int y_coor= 0 ;
+  // int *xptr;
+  // int *yptr;
+  // xptr = x_coor;
+  // yptr = y_coor;
   while (!gameOver){
     myMS.displayBoard(sqtr_ptr);
     cout << "\nPlayer options:\n1. Reveal space\n2. Flag space\n3. Remove flag";
     cin >> player_option;
-    handle_player_turn(player_option);
-    
+    // cout<<"player entered the following..."<<player_option[0]<<endl;
+    option_command = handle_player_turn((char)player_option[0],&x_coor,&y_coor);
+    if(option_command == 1){
+    	cout<<"sending over x = "<<x_coor<<" , y = "<<y_coor<<endl;
+    	myMS.open_square(sqtr_ptr,x_coor,y_coor,gameOver);
+    }
+
+    if(option_command == 2){
+    	myMS.set_flag_square(sqtr_ptr,x_coor,y_coor,true);
+    }
+	if(option_command == 2){
+		myMS.set_flag_square(sqtr_ptr,x_coor,y_coor,false);
+	}
+	if(option_command == 0){cout<<"\nnot a valid option\n";}
+
+	cout<<"bomb counter == "<<myMS.get_bomb_counter()<<" . and bomb check == "<<myMS.get_bomb_check()<<endl;;
+  	if (myMS.get_bomb_check() == myMS.get_bomb_counter()){
+  		gameOver = true;
+  		cout<<"YOU WIN .......................................\nCONGRATULATIONS!!!!\n";
+  	}  
+  
   }
   cout<<"\nGAME OVER"<<endl;
   myMS.displayAll(sqtr_ptr);

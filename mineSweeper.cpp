@@ -15,12 +15,48 @@ using namespace std;
 mineSweeper::mineSweeper(){
     board_width = 10;
     board_height = 10;
+    bomb_check = 0;
+    bomb_counter = 100;
     srand(time(NULL));
 }
 
 mineSweeper::~mineSweeper(){}
 
+// void mineSweeper::handle_player_turn(char c){
+//     string x_coor;
+//     string y_coor;
+//     switch (c){
+//         case '1':
+//             cout<<"\nenter x coordinate to open.==>";
+//             cin>>x_coor;
+//             cout<<"\nenter y coordinate to open.==>";
+//             cin>>y_coor;
+//             int clean_x =  validate_numbers(x_coor);
+//             int clean_y =  validate_numbers(y_coor);
+//             open_square(this,clean_x,clean_y,gameOver);
+//         break;
+//         case '2':
+//             cout<<"\nenter x coordinate to flag.==>";
+//             cin>>x_coor;
+//             cout<<"\nenter y coordinate to flag.==>";
+//             cin>>y_coor;
+//             int clean_x =  validate_numbers(x_coor);
+//             int clean_y =  validate_numbers(y_coor);
+//             toggle_flag_square(this,clean_x,clean_y,gameOver);
+//         break;
+//         case '3':
+//             cout<<"\nenter x coordinate to remove flag.==>";
+//             cin>>x_coor;
+//             cout<<"\nenter y coordinate to remove flag.==>";
+//             cin>>y_coor;
+//             int clean_x =  validate_numbers(x_coor);
+//             int clean_y =  validate_numbers(y_coor);
+//             toggle_flag_square(this,clean_x,clean_y,gameOver);
+//         break;
+//         default:
+//     }
 
+// }
 int mineSweeper::gen_rand_num(int max){
 
     return rand() % max;
@@ -65,6 +101,8 @@ void mineSweeper::init_board(SQUARE_t *outerBoard,Board_t *innerBoard){
         outerBoard[i].y = i/this->board_height;
     }
     calc_hidden(outerBoard);
+    init_bomb_counter();
+    set_bomb_check(outerBoard);
 }
 
 void mineSweeper::displayBoard(SQUARE_t *theBoard){
@@ -78,10 +116,10 @@ void mineSweeper::displayBoard(SQUARE_t *theBoard){
     cout<<endl<<"========================================================"<<endl;
     
     //below this line is just for testing. Needs to be removed on the final version.================================================================================
-//         for (int i = 0; i<b_size;i++){
-//         if(!(i%endofline)){cout<<endl;}
-//         cout<<" "<<theBoard[i].secret;
-//     }
+        for (int i = 0; i<b_size;i++){
+        if(!(i%endofline)){cout<<endl;}
+        cout<<" "<<theBoard[i].open;
+    }
 //     cout<<endl<<"========================================================"<<endl;
 //         for (int i = 0; i<b_size;i++){
 //         if(!(i%endofline)){cout<<endl;}
@@ -175,14 +213,26 @@ void mineSweeper::open_square(SQUARE_t * theBoard,int x,int y,bool &gameOver){
         theBoard[index].val = '0'+theBoard[index].neighbor_mines;
         theBoard[index].open = true;
     }
-    
+    set_bomb_counter(theBoard);    
 }
 
 void mineSweeper::open_all_empty_neighbours(SQUARE_t * theBoard, int x, int y){
+    // cout <<"x == "<<x<<"y == "<<y<<endl;
     int index = coor_to_index(x,y);
-    if (theBoard[index].neighbor_mines!=0){
+    if (theBoard[index].open ==true){
+        return;
+    }else{
+        if (theBoard[index].neighbor_mines == 0&&theBoard[index].secret == '~'){
+            theBoard[index].val = '0';
+            theBoard[index].open = true;
+            // set_bomb_counter();
+        }
+    }
+
+    if (theBoard[index].neighbor_mines!=0&&theBoard[index].secret == '~'){
         theBoard[index].open == true;
         theBoard[index].val = '0'+theBoard[index].neighbor_mines;
+        // set_bomb_counter();
         return;
     }
     if (has_top_n(x,y)){
@@ -190,34 +240,47 @@ void mineSweeper::open_all_empty_neighbours(SQUARE_t * theBoard, int x, int y){
         open_all_empty_neighbours(theBoard, x,y-1);
     }
     if (has_bottom_n(x,y)){
+        // cout<<"this square has bottom."<<endl;
         open_all_empty_neighbours(theBoard,x,y+1);
     }
     if (has_left_n(x,y)){
+                // cout<<"this square has left."<<endl;
+
         open_all_empty_neighbours(theBoard,x-1,y);
     }
     if(has_right_n(x,y)){
+                // cout<<"this square has right."<<endl;
+
         open_all_empty_neighbours(theBoard,x+1,y);
     }
     if(has_topLeft_n(x,y)){
+                // cout<<"this square has topleft."<<endl;
+
         open_all_empty_neighbours(theBoard,x-1,y-1);
     }
     if(has_topRight_n(x,y)){
+                // cout<<"this square has topright."<<endl;
+
         open_all_empty_neighbours(theBoard,x+1,y-1);
     }
     if(has_bottomLeft_n(x,y)){
+                // cout<<"this square has bottomleft."<<endl;
+
         open_all_empty_neighbours(theBoard,x-1,y+1);
     }
     if(has_bottomRight_n(x,y)){
+                // cout<<"this square has bottomright."<<endl;
+
         open_all_empty_neighbours(theBoard,x+1,y+1);
     }
     return;
     
 }
 
-void mineSweeper::flag_square(SQUARE_t * theBoard,int x,int y){
+void mineSweeper::set_flag_square(SQUARE_t * theBoard,int x,int y,bool state){
     int index = coor_to_index(x, y);
-    theBoard[index].flagged = TRUE;
-    theBoard[index].value = !
+    theBoard[index].flagged = state;
+    // theBoard[index].value = 
 }
 
 
@@ -249,8 +312,35 @@ bool mineSweeper::has_bottomLeft_n(int center_x,int center_y){
 //getters 
 int mineSweeper::get_height(){return this->board_height;}
 int mineSweeper::get_width(){return this->board_width;}
-
+int mineSweeper::get_bomb_check(){
+    return this->bomb_check;
+}
+int mineSweeper::get_bomb_counter(){
+    return this->bomb_counter;
+}
 
 //setters
 void mineSweeper::set_height(int h){this->board_height = h;}
 void mineSweeper::set_width(int w){this->board_width = w;}
+void mineSweeper::set_bomb_check(SQUARE_t *theBoard){
+    int size = this->board_height * this->board_width;
+    for (int i = 0;i<size;i++){
+        if(theBoard[i].secret == '*'){
+            this->bomb_check +=1;
+        }
+    }
+}
+
+void mineSweeper::set_bomb_counter(SQUARE_t * theBoard){
+    int size = this->board_height * this->board_width;
+    this->bomb_counter = 0;
+    for (int i = 0;i<size;i++){
+        if(theBoard[i].open == false){
+            this->bomb_counter +=1;
+        }
+    } 
+}
+
+void mineSweeper::init_bomb_counter(){
+    this->bomb_counter = this->board_width*this->board_height;
+}
