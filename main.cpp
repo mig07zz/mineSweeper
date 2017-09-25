@@ -1,26 +1,81 @@
 #include <iostream>
 #include <cstdlib>
 #include "mineSweeper.h"
-#include <map>
+#include <algorithm>
+#include <math.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string>
+
 
 using namespace std;
+bool is_number(const string &s);
+int validate_numbers(string s);
+
+
+bool is_number(const std::string& s)
+{
+    string::const_iterator it = s.begin();
+    while (it != s.end() && isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
+
+int validate_numbers(string s){
+  int ssize = s.size();
+  if (ssize > 2 || (!is_number(s))){   //this is just a restriction to keep users from going over '99' 
+    return MIN_BOARD_SZ;
+  }
+  else{
+    if (is_number(s)){                      
+      return stoi(s);
+    }
+  }
+  return 1;
+}
+
+void handle_player_turn(int player_option){
+  string x_coor;
+  string y_coor;
+  if(player_option == 1){
+    cout<<"\nenter x coordinate to open.==>";
+    cin>>x_coor;
+    cout<<"\nenter y coordinate to open.==>";
+    cin>>y_coor;
+    int clean_x =  validate_numbers(x_coor);
+    int clean_y =  validate_numbers(y_coor);
+    myMS.open_square(sqtr_ptr,clean_x,clean_y,gameOver);
+  }
+  else if(player_option == 2){
+    out<<"\nenter x coordinate to open.==>";
+    cin>>x_coor;
+    cout<<"\nenter y coordinate to open.==>";
+    cin>>y_coor;
+    int clean_x =  validate_numbers(x_coor);
+    int clean_y =  validate_numbers(y_coor);
+    myMS.flag_square(sqtr_ptr,clean_x,clean_y,gameOver);
+  }
+}
  
 int main(int argc, char *argv[])
 {
+  
+  
+  // validate_numbers("hello world..");
   int w = 10;
   int h = 10;
-  int bombs = 10;
+  int bombs = (int)ceil(((float)(w*h) * .20));   //default to 20% bombs
+  
   if(argc>1){
-    w = atoi(argv[1]);
-    cout<<"here1"<<endl;
+    w = validate_numbers((argv[1]));
+    // cout<<"here1"<<endl;
   }
   if(argc>2){
-    h = atoi(argv[2]);
-        cout<<"here2"<<endl;
+    h = validate_numbers((argv[2]));
+        // cout<<"here2"<<endl;
   }
   if(argc>3){
-    bombs = atoi(argv[3]);
-        cout<<"here3"<<endl;
+    bombs = validate_numbers((argv[3]));
+        // cout<<"here3"<<endl;
   }
   // cout << "Hello World!" << endl;
   mineSweeper myMS;
@@ -31,7 +86,7 @@ int main(int argc, char *argv[])
   
   Board_t *mb;
   mb = myMS.make_gameBoard(w,h,bombs);
-  cout<<"in main the address returned is "<<(void*)mb<<endl;
+  // cout<<"in main the address returned is "<<(void*)mb<<endl;
   // for (int i = 0; i<;i++){
   //   if (!(i%10)){cout<<endl;}
   //   cout<<(int)mb[i];
@@ -47,15 +102,15 @@ int main(int argc, char *argv[])
   
   //main game loop code goes here 
   bool gameOver = false;
-  int x_coor;
-  int y_coor;
+  int player_option;
+  string x_coor;
+  string y_coor;
   while (!gameOver){
     myMS.displayBoard(sqtr_ptr);
-    cout<<"\nenter x coordinate to open.==>";
-    cin>>x_coor;
-    cout<<"\nenter y coordinate to open.==>";
-    cin>>y_coor;
-    myMS.open_square(sqtr_ptr,x_coor,y_coor,gameOver);
+    cout << "\nPlayer options:\n1. Reveal space\n2. Flag space\n3. Remove flag";
+    cin >> player_option;
+    handle_player_turn(player_option);
+    
   }
   cout<<"\nGAME OVER"<<endl;
   myMS.displayAll(sqtr_ptr);

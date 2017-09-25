@@ -45,9 +45,7 @@ Board_t * mineSweeper::make_gameBoard(int width, int height,int number_of_mines)
     for (int i =0 ;i<bomb_limit;i++){
         GAMEBOARD[gen_rand_num(size)] = 1;
     }
-
     return GAMEBOARD;
-    
 }
 
 void mineSweeper::init_board(SQUARE_t *outerBoard,Board_t *innerBoard){
@@ -80,24 +78,26 @@ void mineSweeper::displayBoard(SQUARE_t *theBoard){
     cout<<endl<<"========================================================"<<endl;
     
     //below this line is just for testing. Needs to be removed on the final version.================================================================================
-    //     for (int i = 0; i<b_size;i++){
-    //     if(!(i%endofline)){cout<<endl;}
-    //     cout<<" "<<theBoard[i].secret;
-    // }
-    // cout<<endl<<"========================================================"<<endl;
-    //     for (int i = 0; i<b_size;i++){
-    //     if(!(i%endofline)){cout<<endl;}
-    //     cout<<" "<<theBoard[i].neighbor_mines;
-    // }
-    // cout<<endl<<"========================================================"<<endl;
+//         for (int i = 0; i<b_size;i++){
+//         if(!(i%endofline)){cout<<endl;}
+//         cout<<" "<<theBoard[i].secret;
+//     }
+//     cout<<endl<<"========================================================"<<endl;
+//         for (int i = 0; i<b_size;i++){
+//         if(!(i%endofline)){cout<<endl;}
+//         cout<<" "<<theBoard[i].neighbor_mines;
+//     }
+//     cout<<endl<<"========================================================"<<endl;
 }
-void mineSweeper::displayAll(SQUARE_t *theboard){
+
+
+void mineSweeper::displayAll(SQUARE_t *theBoard){
     cout<<"======================================================"<<endl;
     int endofline = this->board_width;
     int b_size = this->board_height*this->board_width;
     for (int i = 0; i<b_size;i++){
         if(!(i%endofline)){cout<<endl;}
-        cout<<" "<<theboard[i].secret;
+        cout<<" "<<theBoard[i].secret;
     }
     cout<<endl<<"========================================================"<<endl;
 }
@@ -117,62 +117,109 @@ void mineSweeper::calc_hidden(SQUARE_t *theBoard){
 }
 
 
-void mineSweeper::mineFinder(SQUARE_t* theboard,int x, int y){
+void mineSweeper::mineFinder(SQUARE_t* theBoard,int x, int y){
     if (has_top_n(x,y)){
-        if(theboard[coor_to_index(x,y-1)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x,y-1)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_bottom_n(x,y)){
-        if(theboard[coor_to_index(x,y+1)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x,y+1)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_left_n(x,y)){
-        if(theboard[coor_to_index(x-1,y)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x-1,y)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_right_n(x,y)){
-        if(theboard[coor_to_index(x+1,y)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x+1,y)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_topLeft_n(x,y)){
-        if(theboard[coor_to_index(x-1,y-1)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x-1,y-1)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_topRight_n(x,y)){
-        if(theboard[coor_to_index(x+1,y-1)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x+1,y-1)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_bottomLeft_n(x,y)){
-        if(theboard[coor_to_index(x-1,y+1)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x-1,y+1)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
     if (has_bottomRight_n(x,y)){
-        if(theboard[coor_to_index(x+1,y+1)].secret == '*'){
-            theboard[coor_to_index(x,y)].neighbor_mines +=1;
+        if(theBoard[coor_to_index(x+1,y+1)].secret == '*'){
+            theBoard[coor_to_index(x,y)].neighbor_mines +=1;
         }
     }
 }
 
-void mineSweeper::open_square(SQUARE_t * theboard,int x,int y,bool &gameOver){
+void mineSweeper::open_square(SQUARE_t * theBoard,int x,int y,bool &gameOver){
     int index = coor_to_index(x,y);
-    if (theboard[index].secret=='*'){
+    if (theBoard[index].secret=='*'){
         gameOver = true;
-        theboard[index].val = theboard[index].secret;
-        theboard[index].open = true;
+        theBoard[index].val = theBoard[index].secret;
+        theBoard[index].open = true;
     }
     else{
-        theboard[index].val = '0'+theboard[index].neighbor_mines;
-        theboard[index].open = true;
+        if (theBoard[index].neighbor_mines == 0){
+            cout <<"found a square with a 0"<<endl;
+            open_all_empty_neighbours(theBoard,x,y);
+        }
+        theBoard[index].val = '0'+theBoard[index].neighbor_mines;
+        theBoard[index].open = true;
     }
     
 }
+
+void mineSweeper::open_all_empty_neighbours(SQUARE_t * theBoard, int x, int y){
+    int index = coor_to_index(x,y);
+    if (theBoard[index].neighbor_mines!=0){
+        theBoard[index].open == true;
+        theBoard[index].val = '0'+theBoard[index].neighbor_mines;
+        return;
+    }
+    if (has_top_n(x,y)){
+        // cout<<"this square has top."<<endl;
+        open_all_empty_neighbours(theBoard, x,y-1);
+    }
+    if (has_bottom_n(x,y)){
+        open_all_empty_neighbours(theBoard,x,y+1);
+    }
+    if (has_left_n(x,y)){
+        open_all_empty_neighbours(theBoard,x-1,y);
+    }
+    if(has_right_n(x,y)){
+        open_all_empty_neighbours(theBoard,x+1,y);
+    }
+    if(has_topLeft_n(x,y)){
+        open_all_empty_neighbours(theBoard,x-1,y-1);
+    }
+    if(has_topRight_n(x,y)){
+        open_all_empty_neighbours(theBoard,x+1,y-1);
+    }
+    if(has_bottomLeft_n(x,y)){
+        open_all_empty_neighbours(theBoard,x-1,y+1);
+    }
+    if(has_bottomRight_n(x,y)){
+        open_all_empty_neighbours(theBoard,x+1,y+1);
+    }
+    return;
+    
+}
+
+void mineSweeper::flag_square(SQUARE_t * theBoard,int x,int y){
+    int index = coor_to_index(x, y);
+    theBoard[index].flagged = TRUE;
+    theBoard[index].value = !
+}
+
 
 bool mineSweeper::has_top_n(int center_x,int center_y){
     return ((center_y - 1) >= 0)?true:false;
